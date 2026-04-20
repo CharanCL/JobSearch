@@ -17,7 +17,17 @@ st.write("Search jobs, review matches, preview emails, and send your resume safe
 # ---------------- Sidebar ----------------
 st.sidebar.header("Settings")
 
-location = st.sidebar.text_input("Job Location", value="London")
+
+if "location" not in st.session_state:
+    st.session_state["location"] = "London"
+
+location = st.sidebar.text_input(
+    "Job Location (city, town, postcode, or country)",
+    value=st.session_state["location"]
+)
+
+st.session_state["location"] = location
+
 
 
 RESUME_PATH = "temp_resume.pdf"
