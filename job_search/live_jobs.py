@@ -64,8 +64,7 @@ def fetch_jobs_live(skills, location="London", max_jobs=30):
 
     for query in queries:
         # Pagination (2 pages per query)
-        for start in [0, 10]:
-
+        for start in range(0, 50, 10):  # 0,10,20,30,40
             params = {
                 "engine": "google_jobs",
                 "q": query,
