@@ -27,7 +27,7 @@ def fetch_jobs_live(skills, location="London"):
     jobs = []
 
     for job in data.get("jobs_results", []):
-        jobs.append({
+        jobs.append({ 
             "title": job.get("title", ""),
             "company": job.get("company_name", ""),
             "description": job.get("description", "")

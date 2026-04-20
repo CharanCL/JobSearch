@@ -91,22 +91,11 @@ if st.button("🔍 Find Matching Jobs"):
 
 
 
-
 # ---------------- Display results ----------------
 if "results" in st.session_state:
     st.subheader("🏆 Job Matches")
 
-    # Initialize visible counter
-    if "visible_count" not in st.session_state:
-        st.session_state["visible_count"] = 10
-
-    if st.button("Load more jobs"):
-        st.session_state["visible_count"] += 10
-
-    for idx, job in enumerate(
-        st.session_state["results"][:st.session_state["visible_count"]],
-        start=1
-    ):
+    for idx, job in enumerate(st.session_state["results"], start=1):
         job_id = f"{job['title']}|{job['company']}"
 
         with st.expander(f"{idx}. {job['title']} @ {job['company']}"):
@@ -141,14 +130,14 @@ if "results" in st.session_state:
                 "Email body",
                 value=email_body,
                 height=220,
-                key=f"body_{idx}"
+                key=f"body_{idx}" 
             )
 
-            if st.button("✅ Send Resume", key=f"send_{idx}"):
+            if st.button(f"✅ Send Resume", key=f"send_{idx}"):
                 send_resume_email(
                     to_email=custom_email,
                     subject=subject,
                     body=email_body,
-                    resume_path=RESUME_PATH
+                    resume_path="temp_resume.pdf"
                 )
                 st.success("✅ Resume sent successfully!")
