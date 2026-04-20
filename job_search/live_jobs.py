@@ -1,6 +1,8 @@
 import requests
 import os
 import hashlib
+from job_search.applied_jobs import load_applied_jobs
+
 
 def generate_job_id(title, company):
     key = f"{title}-{company}".lower().strip()
@@ -58,7 +60,7 @@ def classify_role(title):
 
 
 # 🔹 Main function
-def fetch_jobs_live(skills, location="London", max_jobs=30):
+def fetch_jobs_live(skills, location="London", max_jobs=300):
     if not SERPAPI_KEY:
         raise RuntimeError("SerpAPI key not set")
 
@@ -66,10 +68,11 @@ def fetch_jobs_live(skills, location="London", max_jobs=30):
 
     all_jobs = []
     seen = set()
+    applied_jobs = load_applied_jobs()  # ✅ load applied jobs
 
     for query in queries:
-        # Pagination (2 pages per query)
-        for start in range(0, 50, 10):  # 0,10,20,30,40
+        for start in range(0, 50, 10):
+
             params = {
                 "engine": "google_jobs",
                 "q": query,
@@ -84,8 +87,11 @@ def fetch_jobs_live(skills, location="London", max_jobs=30):
             data = response.json()
 
             for job in data.get("jobs_results", []):
-                title = job.get("title", "").strip().lower()
-                company = job.get("company_name", "").strip().lower()
+                title_raw = job.get("title", "")
+                company_raw = job.get("company_name", "")
+
+                title = title_raw.strip().lower()
+                company = company_raw.strip().lower()
 
                 key = (title, company)
 
@@ -94,19 +100,25 @@ def fetch_jobs_live(skills, location="London", max_jobs=30):
 
                 seen.add(key)
 
+                # ✅ generate job_id
+                job_id = generate_job_id(title_raw, company_raw)
+
+                # ✅ skip if already applied
+                if job_id in applied_jobs:
+                    continue
+
                 all_jobs.append({
-                    "job_id": job_id
-                    "title": job.get("title", ""),
-                    "company": job.get("company_name", ""),
+                    "job_id": job_id,  # ✅ fixed comma
+                    "title": title_raw,
+                    "company": company_raw,
                     "location": job.get("location", ""),
                     "via": job.get("via", ""),
                     "description": job.get("description", ""),
                     "posted_at": job.get("published_at") or job.get("posted_at"),
-                    "role": classify_role(job.get("title", "")),
+                    "role": classify_role(title_raw),
                     "query_used": query
                 })
 
-                # ✅ Stop early if enough jobs collected
                 if len(all_jobs) >= max_jobs:
                     print(f"Collected {len(all_jobs)} jobs (early stop)")
                     return all_jobs
