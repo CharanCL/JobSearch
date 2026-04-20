@@ -1,6 +1,6 @@
 
 import streamlit as st
-
+import os
 from resume_reader.resume_reader import extract_resume_text
 from skill_extractor.extract_skills import extract_skills
 from job_search.live_jobs import fetch_jobs_live
@@ -19,24 +19,33 @@ st.sidebar.header("Settings")
 
 location = st.sidebar.text_input("Job Location", value="London")
 
+
+RESUME_PATH = "temp_resume.pdf"
+
 uploaded_resume = st.sidebar.file_uploader(
-    "Upload your resume (PDF)",
+    "Upload your resume (PDF) — upload once",
     type=["pdf"]
 )
 
-# ---------------- Resume handling ----------------
 if uploaded_resume:
-    with open("temp_resume.pdf", "wb") as f:
+    with open(RESUME_PATH, "wb") as f:
         f.write(uploaded_resume.getbuffer())
+    st.sidebar.success("✅ Resume uploaded and saved")
 
-    resume_text = extract_resume_text("temp_resume.pdf")
-    skills = extract_skills(resume_text)
+elif os.path.exists(RESUME_PATH):
+    st.sidebar.info("📄 Using previously uploaded resume")
 
-    st.sidebar.subheader("Extracted Skills")
-    st.sidebar.write(", ".join(skills))
 else:
     st.warning("Please upload your resume to continue.")
     st.stop()
+
+# Always use the saved resume
+resume_text = extract_resume_text(RESUME_PATH)
+skills = extract_skills(resume_text)
+
+st.sidebar.subheader("Extracted Skills")
+st.sidebar.write(", ".join(skills))
+
 
 # ---------------- Fetch jobs ----------------
 if st.button("🔍 Find Matching Jobs"):
