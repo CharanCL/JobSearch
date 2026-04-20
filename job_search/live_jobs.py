@@ -1,5 +1,10 @@
 import requests
 import os
+import hashlib
+
+def generate_job_id(title, company):
+    key = f"{title}-{company}".lower().strip()
+    return hashlib.md5(key.encode()).hexdigest()
 
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 
@@ -90,6 +95,7 @@ def fetch_jobs_live(skills, location="London", max_jobs=30):
                 seen.add(key)
 
                 all_jobs.append({
+                    "job_id": job_id
                     "title": job.get("title", ""),
                     "company": job.get("company_name", ""),
                     "location": job.get("location", ""),
