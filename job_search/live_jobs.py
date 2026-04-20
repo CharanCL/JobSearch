@@ -35,4 +35,14 @@ def fetch_jobs_live(skills, location="London"):
 
     print(f"SerpAPI returned {len(jobs)} jobs")
 
-    return jobs
+    
+	return [
+    {
+        "title": job.get("title", ""),
+        "company": job.get("company_name", ""),
+        "description": job.get("description", ""),
+        "posted_at": job.get("published_at") or job.get("posted_at")
+    }
+    for job in all_jobs[:max_jobs]
+	]
+

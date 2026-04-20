@@ -9,6 +9,13 @@ from email_agent.send_email import send_resume_email
 from email_agent.email_body import generate_email_body
 from email_agent.email_suggester import suggest_hr_emails
 
+
+# Auto-refresh every 1 hour (3600000 ms)
+st.experimental_autorefresh(
+    interval=60 * 60 * 1000,
+    key="hourly_refresh"
+)
+
 st.set_page_config(page_title="AI Job Application Assistant", layout="wide")
 
 st.title("🤖 AI Job Application Assistant")
@@ -16,6 +23,7 @@ st.write("Search jobs, review matches, preview emails, and send your resume safe
 
 # ---------------- Sidebar ----------------
 st.sidebar.header("Settings")
+st.sidebar.caption("Examples: London, Manchester, Birmingham, UK, Remote")
 
 
 if "location" not in st.session_state:
@@ -56,19 +64,49 @@ skills = extract_skills(resume_text)
 st.sidebar.subheader("Extracted Skills")
 st.sidebar.write(", ".join(skills))
 
+max_jobs = st.sidebar.slider(
+    "Number of jobs to load",
+    min_value=10,
+    max_value=500,
+    value=30,
+    step=10
+)
+
 
 # ---------------- Fetch jobs ----------------
 if st.button("🔍 Find Matching Jobs"):
     with st.spinner("Searching jobs..."):
-        jobs = fetch_jobs_live(skills, location)
+        jobs = fetch_jobs_live(skills, location, max_jobs=max_jobs)
         results = rank_jobs(resume_text, jobs)
+
+        # Sort latest jobs first (if timestamps exist)
+        results.sort(
+            key=lambda x: x.get("posted_at") or "",
+            reverse=True
+        )
+
         st.session_state["results"] = results
+        st.session_state["visible_count"] = 10   # reset load‑more counter
+
+
+
+
 
 # ---------------- Display results ----------------
 if "results" in st.session_state:
     st.subheader("🏆 Job Matches")
 
-    for idx, job in enumerate(st.session_state["results"], start=1):
+    # Initialize visible counter
+    if "visible_count" not in st.session_state:
+        st.session_state["visible_count"] = 10
+
+    if st.button("Load more jobs"):
+        st.session_state["visible_count"] += 10
+
+    for idx, job in enumerate(
+        st.session_state["results"][:st.session_state["visible_count"]],
+        start=1
+    ):
         job_id = f"{job['title']}|{job['company']}"
 
         with st.expander(f"{idx}. {job['title']} @ {job['company']}"):
@@ -106,11 +144,11 @@ if "results" in st.session_state:
                 key=f"body_{idx}"
             )
 
-            if st.button(f"✅ Send Resume", key=f"send_{idx}"):
+            if st.button("✅ Send Resume", key=f"send_{idx}"):
                 send_resume_email(
                     to_email=custom_email,
                     subject=subject,
                     body=email_body,
-                    resume_path="temp_resume.pdf"
+                    resume_path=RESUME_PATH
                 )
                 st.success("✅ Resume sent successfully!")
