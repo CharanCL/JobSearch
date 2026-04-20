@@ -4,15 +4,34 @@ from job_search.mock_jobs import get_mock_jobs
 
 
 
+
 SKILL_SYNONYMS = {
-    "strategy": {"strategy", "strategic", "planning", "business strategy"},
-    "marketing": {"marketing", "branding", "digital marketing", "campaigns"},
-    "finance": {"finance", "financial", "budgeting", "forecasting", "modeling"},
-    "operations": {"operations", "process", "supply chain", "logistics"},
-    "analytics": {"analytics", "data analysis", "excel", "power bi", "tableau"},
-    "management": {"management", "leadership", "stakeholder", "team"},
-    "sales": {"sales", "revenue", "client", "business development"}
+    "construction": {
+        "construction", "site", "site management", "building"
+    },
+    "management": {
+        "management", "project management", "planning", "coordination"
+    },
+    "architecture": {
+        "architecture", "architectural", "design", "architect"
+    },
+    "engineering": {
+        "civil", "structural", "engineering"
+    },
+    "costing": {
+        "cost", "costing", "budgeting", "estimation", "quantity surveying"
+    },
+    "software": {
+        "autocad", "revit", "bim"
+    },
+    "contracts": {
+        "contracts", "procurement", "tender", "compliance"
+    },
+    "safety": {
+        "health", "safety", "hse", "risk"
+    }
 }
+
 
 
 

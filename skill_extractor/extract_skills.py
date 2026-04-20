@@ -1,28 +1,29 @@
 from resume_reader.resume_reader import extract_resume_text
 import re
 
+
 COMMON_SKILLS = [
-    "business analysis",
-    "market research",
-    "strategy",
-    "operations",
+    "construction management",
     "project management",
-    "finance",
-    "financial modeling",
-    "marketing",
-    "digital marketing",
-    "sales",
-    "customer acquisition",
-    "stakeholder management",
-    "leadership",
-    "team management",
-    "process improvement",
-    "supply chain",
-    "data analysis",
-    "excel",
-    "power bi",
-    "tableau"
+    "site management",
+    "civil engineering",
+    "architecture",
+    "architectural design",
+    "structural engineering",
+    "quantity surveying",
+    "cost estimation",
+    "budgeting",
+    "planning",
+    "contracts",
+    "health and safety",
+    "risk management",
+    "autocad",
+    "revit",
+    "bim",
+    "blueprints",
+    "building regulations"
 ]
+
 
 
 def extract_skills(resume_text):
