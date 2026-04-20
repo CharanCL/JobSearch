@@ -97,15 +97,24 @@ if st.button("🔍 Find Matching Jobs"):
 
 
 
+
 # ---------------- Display results ----------------
 if "results" in st.session_state:
     st.subheader("🏆 Job Matches")
 
-    for idx, job in enumerate(st.session_state["results"], start=1):
-        job_id = f"{job['title']}|{job['company']}"
+    # Initialize visible job counter ONCE
+    if "visible_count" not in st.session_state:
+        st.session_state["visible_count"] = 10
 
+    # Load more jobs button
+    if st.button("Load more jobs"):
+        st.session_state["visible_count"] += 10
+
+    for idx, job in enumerate(
+        st.session_state["results"][:st.session_state["visible_count"]],
+        start=1
+    ):
         with st.expander(f"{idx}. {job['title']} @ {job['company']}"):
-
             st.write(f"**Match Score:** {job['score']}%")
             st.write(f"**Matched Skills:** {', '.join(job['matched_skills'])}")
 
