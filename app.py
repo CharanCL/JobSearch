@@ -1,6 +1,7 @@
 
 import streamlit as st
 import os
+import time
 from resume_reader.resume_reader import extract_resume_text
 from skill_extractor.extract_skills import extract_skills
 from job_search.live_jobs import fetch_jobs_live
@@ -11,10 +12,15 @@ from email_agent.email_suggester import suggest_hr_emails
 
 
 # Auto-refresh every 1 hour (3600000 ms)
-st.experimental_autorefresh(
-    interval=60 * 60 * 1000,
-    key="hourly_refresh"
-)
+
+if "last_refresh" not in st.session_state:
+    st.session_state["last_refresh"] = time.time()
+
+# Refresh every 1 hour
+if time.time() - st.session_state["last_refresh"] > 60 * 60:
+    st.session_state["last_refresh"] = time.time()
+    st.experimental_rerun()
+
 
 st.set_page_config(page_title="AI Job Application Assistant", layout="wide")
 
