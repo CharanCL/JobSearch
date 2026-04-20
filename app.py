@@ -19,7 +19,7 @@ st.write("Search jobs, review matches, preview emails, and send your resume safe
 st.sidebar.header("Settings")
 location = st.sidebar.text_input("Job Location", value="London")
 hr_email = st.sidebar.text_input("HR Email", value="hr@example.com")
-resume_path = r"C:\GITHUB\JobSearch\resume.pdf"
+resume_path = "resume.pdf"
 
 # Load resume
 resume_text = extract_resume_text(resume_path)
